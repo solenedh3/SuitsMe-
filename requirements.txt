@@ -4,3 +4,4 @@ Pillow
 pybase64
 uuid
 matplotlib
+scikit-learn
