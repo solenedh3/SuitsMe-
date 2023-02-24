@@ -1,7 +1,7 @@
 streamlit
 pandas
 Pillow
-base64
+pybase64
 uuid
 os
 matplotlib
