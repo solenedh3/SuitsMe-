@@ -3,5 +3,4 @@ pandas
 Pillow
 pybase64
 uuid
-os
 matplotlib
