@@ -1,0 +1,7 @@
+streamlit
+pandas
+Pillow
+base64
+uuid
+os
+matplotlib
