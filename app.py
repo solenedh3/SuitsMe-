@@ -6,6 +6,11 @@ import uuid
 from PIL import Image
 import os
 import matplotlib.pyplot as plt
+import time 
+from sklearn.metrics import silhouette_score
+from sklearn import metrics 
+from sklearn.metrics import calinski_harabasz_score
+from sklearn.metrics import davies_bouldin_score
 
 
 def set_style():
@@ -69,6 +74,12 @@ logo_resized = logo.resize((250, 200))
 
 # Load the dataframe
 df_sorted = pd.read_csv("./df_sorted.csv")
+df_X = pd.read_csv("./X.csv")
+
+df_truelabel = pd.read_csv("./true_label.csv")
+
+df_labels = pd.read_csv("./labels.csv")
+df_kmeans = pd.read_csv("./kmeans_labels.csv")
 
 # Define the categories and subcategories
 categories = ['Home', 'Topwear', 'Bottom wear', 'Shoes', 'Accessories', 'Customer Reviews', 'About', 'Contact', 'Newsletter', 'Evaluation metrics']
@@ -209,11 +220,51 @@ elif category == 'Customer Reviews':
             st.write(f'{review["author"]}, {review["position"]}')
 
 elif category == 'Evaluation metrics':
+    
     set_background(black_bg_path)
-    st.write("# Cluster Quality Metrics")
-    st.write("""
-    The average distance between each data point and its nearest cluster is calculated using the Silhouette score and is then compared to the distance to the next nearest cluster. A score of 0.18 suggests that there may be some overlap between the clusters and that the separation between them is not completely clear. The Rand Index of 0.87 shows a strong correlation between the algorithmic clustering and a reference clustering. The algorithm appears to have successfully caught the patterns and structure contained in the data. A measurement of the proportion of between-cluster to within-cluster dispersion is the 1214.26 Calinski-Harabasz Index. The clusters are clearly distinguished from one another, and each cluster's data points are closely packed, according to an index with a greater value. The average similarity between each cluster and its most similar cluster is measured by the Davies-Bouldin Index of 1.74, which contrasts with the average dissimilarity between each cluster and its least similar cluster. A score of 1.74 here indicates that the clusters are generally well-separated, though there may be some overlap. In conclusion, the dataset's clustering method created 10 clusters that are distinct from one another and closely resemble a reference grouping. Overall, the clustering algorithm has successfully identified meaningful patterns within the dataset, but there may be room for further improvement in terms of cluster separation and overlap.
-    """)
+    
+    st.write('# Cluster Quality Metrics')
+    
+    st.write('## Silhouette Score')
+    if st.button('Calculate Silhouette score'):
+        with st.spinner('Calculating silhouette score...'):
+            start_time = time.time()
+            silhouette_avg = silhouette_score(df_X, df_labels)
+            end_time = time.time()
+            time_taken = round(end_time - start_time, 2)
+        st.write(f"The silhouette score is: {silhouette_avg:.3f}")
+        st.write(f"Time taken: {time_taken:.2f} seconds")
+        
+    st.write('## Rand Index Score')
+    if st.button('Calculate Rand index score'):
+        with st.spinner('Calculating rand index score...'):
+            start_time = time.time()
+            rand_index = metrics.rand_score(df_truelabel.values.ravel(), df_labels.values.ravel())
+            end_time = time.time()
+            time_taken = round(end_time - start_time, 2)
+        st.write(f"The Rand index score is: {rand_index:.3f}")
+        st.write(f"Time taken: {time_taken:.2f} seconds")
+
+    st.write('## Calinski-Harabasz Score')
+    if st.button('Calculate Calinski-Harabasz score'):
+        with st.spinner('Calculating Calinski-Harabasz score...'):
+            start_time = time.time()
+            score = calinski_harabasz_score(df_X, df_kmeans)
+            end_time = time.time()
+            time_taken = round(end_time - start_time, 2)
+        st.write(f"The Calinski-Harabasz score is: {score:.3f}")
+        st.write(f"Time taken: {time_taken:.2f} seconds")
+
+    st.write('## Davies-Bouldin Index')
+    if st.button('Calculate Davies-Bouldin Index'):
+        with st.spinner('Calculating Davies-Bouldin Index...'):
+            start_time = time.time()
+            dbi = davies_bouldin_score(df_X, df_kmeans)
+            end_time = time.time()
+            time_taken = round(end_time - start_time, 2)
+        st.write(f"The Davies-Bouldin Index is: {dbi:.3f}")
+        st.write(f"Time taken: {time_taken:.2f} seconds")
+
 
 else:
     set_background(black_bg_path)
@@ -693,3 +744,4 @@ elif subcategory == 'Mini bags':
             page_number += 1
             st.experimental_set_query_params(page=page_number)
             st.session_state['page_number'] = page_number
+
